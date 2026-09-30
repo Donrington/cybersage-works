@@ -4,6 +4,7 @@ import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { getLenis } from "@/lib/lenis";
 import { DUR, EASE_DRAWER, EASE_OUT } from "@/lib/motion";
 import { CaretLeft, CaretRight, Close } from "./Icons";
 
@@ -26,6 +27,8 @@ interface LightboxProps {
   onClose: () => void;
   /** When set, items with a projectId get a "Go to project" link. */
   onGoToProject?: (projectId: string) => void;
+  /** Fires once the close animation has finished and the page is scrollable again. */
+  onExitComplete?: () => void;
   /** Accessible name of the dialog. */
   label: string;
 }
@@ -41,7 +44,9 @@ export function Lightbox(props: LightboxProps) {
   const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
   if (!mounted) return null;
   return createPortal(
-    <AnimatePresence>{props.index !== null && <LightboxDialog key="lightbox" {...props} index={props.index} />}</AnimatePresence>,
+    <AnimatePresence onExitComplete={props.onExitComplete}>
+      {props.index !== null && <LightboxDialog key="lightbox" {...props} index={props.index} />}
+    </AnimatePresence>,
     document.body,
   );
 }
@@ -77,6 +82,7 @@ function LightboxDialog({ items, index, onIndexChange, onClose, onGoToProject, l
     const prev = { overflow: html.style.overflow, paddingRight: html.style.paddingRight };
     html.style.overflow = "hidden";
     if (scrollbar > 0) html.style.paddingRight = `${scrollbar}px`;
+    getLenis()?.stop();
     closeRef.current?.focus({ preventScroll: true });
 
     const onKey = (e: KeyboardEvent) => {
@@ -113,6 +119,7 @@ function LightboxDialog({ items, index, onIndexChange, onClose, onGoToProject, l
       document.removeEventListener("keydown", onKey);
       html.style.overflow = prev.overflow;
       html.style.paddingRight = prev.paddingRight;
+      getLenis()?.start();
       const now = document.activeElement;
       if (!now || now === document.body || dialog?.contains(now)) trigger?.focus({ preventScroll: true });
     };

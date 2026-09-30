@@ -1,10 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Instrument_Serif } from "next/font/google";
+import { RevealObserver } from "@/components/site/RevealObserver";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { SmoothScroll } from "@/components/site/SmoothScroll";
 import { MAIN_SITE_URL, OG_IMAGE, PERSON, SITE_URL } from "@/lib/site";
+import "lenis/dist/lenis.css";
 import "./globals.css";
+
+// Before first paint: opt into scroll-reveal hidden states only when JS runs
+// and motion is welcome. Without it, everything simply renders visible.
+const JS_FLAG = `try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("js")}catch(e){}`;
 
 const satoshi = localFont({
   src: [{ path: "../fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" }],
@@ -60,7 +67,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${satoshi.variable} ${instrument.variable}`}>
+    <html lang="en" className={`${satoshi.variable} ${instrument.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
+      </head>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
@@ -70,6 +80,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
         </main>
         <SiteFooter />
+        <div aria-hidden="true" className="page-grain" />
+        <SmoothScroll />
+        <RevealObserver />
       </body>
     </html>
   );

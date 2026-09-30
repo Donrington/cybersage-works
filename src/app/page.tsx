@@ -1,5 +1,6 @@
 import { NextPageLink } from "@/components/site/NextPageLink";
 import { FromTheStudio } from "@/components/studio/FromTheStudio";
+import { ProjectMarquee } from "@/components/work/ProjectMarquee";
 import { ProofOfWork } from "@/components/work/ProofOfWork";
 import { WorkHero } from "@/components/work/WorkHero";
 import { PROJECTS } from "@/data/projects";
@@ -59,6 +60,7 @@ export default function WorkPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <WorkHero />
+      <ProjectMarquee />
       <ProofOfWork />
       <FromTheStudio />
       <NextPageLink href="/testimonials" label="Testimonials" />

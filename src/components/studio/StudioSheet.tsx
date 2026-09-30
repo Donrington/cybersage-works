@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PROJECTS_BY_ID, formatNo } from "@/data/projects";
 import { STUDIO_SHOTS, type StudioShot } from "@/data/studio";
 import { Lightbox, type LightboxItem } from "@/components/site/Lightbox";
-import { openProject, prefersReducedMotion } from "@/lib/events";
+import { openProject } from "@/lib/events";
+import { scrollToElement } from "@/lib/lenis";
 import { EASE_IN_OUT } from "@/lib/motion";
 
 const INITIAL = 12;
@@ -26,6 +27,7 @@ export function StudioSheet() {
   const reduce = !!useReducedMotion();
   const [showAll, setShowAll] = useState(false);
   const [index, setIndex] = useState<number | null>(null);
+  const pendingProject = useRef<string | null>(null);
   const shots = showAll ? STUDIO_SHOTS : STUDIO_SHOTS.slice(0, INITIAL);
 
   function toggle() {
@@ -34,12 +36,20 @@ export function StudioSheet() {
       return;
     }
     setShowAll(false);
-    document.getElementById("studio")?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+    const studio = document.getElementById("studio");
+    if (studio) scrollToElement(studio, "start");
   }
 
+  // Close first; jump once the viewer is gone and scrolling is unlocked.
   function goToProject(projectId: string) {
+    pendingProject.current = projectId;
     setIndex(null);
-    openProject(projectId);
+  }
+
+  function onViewerClosed() {
+    const id = pendingProject.current;
+    pendingProject.current = null;
+    if (id) openProject(id);
   }
 
   return (
@@ -57,7 +67,7 @@ export function StudioSheet() {
                 className="group block w-full cursor-zoom-in text-left"
               >
                 <span
-                  className="shot-ring relative block overflow-hidden bg-off"
+                  className="shot-ring relative block overflow-hidden bg-canvas shadow-[0_24px_48px_-32px_rgb(10_10_10/0.35)]"
                   style={{ aspectRatio: `${s.image.width} / ${s.image.height}` }}
                 >
                   <Image
@@ -66,13 +76,13 @@ export function StudioSheet() {
                     width={s.image.width}
                     height={s.image.height}
                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-quint group-hover:scale-[1.045]"
                   />
-                  {/* Reveal: a canvas-coloured cover drains downward, top to bottom.
+                  {/* Reveal: a band-coloured cover drains downward, top to bottom.
                       Transform-only, so it never waits on clip-path support. */}
                   <motion.span
                     aria-hidden="true"
-                    className="absolute inset-0 z-[1] origin-bottom bg-canvas"
+                    className="absolute inset-0 z-[1] origin-bottom bg-off"
                     initial={{ scaleY: 1 }}
                     whileInView={{ scaleY: 0 }}
                     viewport={{ once: true, margin: "-60px" }}
@@ -107,6 +117,7 @@ export function StudioSheet() {
         onIndexChange={setIndex}
         onClose={() => setIndex(null)}
         onGoToProject={goToProject}
+        onExitComplete={onViewerClosed}
         label="Studio screens"
       />
     </>

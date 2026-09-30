@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import type { Testimonial, TestimonialSource } from "@/data/testimonials";
 import { Expand } from "@/components/site/Icons";
 import { Lightbox, type LightboxItem } from "@/components/site/Lightbox";
 import { EASE_OUT } from "@/lib/motion";
+import { InkText } from "./InkText";
 
 const SOURCE_LABEL: Record<TestimonialSource, string> = {
   Client: "Client",
@@ -32,6 +33,7 @@ function splitQuote(quote: string, highlight: string) {
  */
 export function TestimonialEntry({ t }: { t: Testimonial }) {
   const reduce = !!useReducedMotion();
+  const quoteRef = useRef<HTMLParagraphElement>(null);
   const [tab, setTab] = useState(0);
   const [viewer, setViewer] = useState<number | null>(null);
   const proof = t.proofs[tab];
@@ -79,9 +81,9 @@ export function TestimonialEntry({ t }: { t: Testimonial }) {
 
       <div className="md:col-span-8 lg:col-span-6">
         <blockquote className="type-quote text-ink-60">
-          <p className="-indent-[0.42em]">
+          <p ref={quoteRef} className="-indent-[0.42em]">
             “{before}
-            <span className="text-ink">{match}</span>
+            <InkText text={match} targetRef={quoteRef} />
             {after}”
           </p>
         </blockquote>

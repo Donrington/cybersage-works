@@ -7,7 +7,8 @@ import { GROUPS, PROJECTS, PROJECTS_BY_ID, formatNo, type Project, type ProjectG
 import { shotsForProject } from "@/data/studio";
 import { ArrowUpRight, Expand, GitHub, Plus } from "@/components/site/Icons";
 import { Lightbox, type LightboxItem } from "@/components/site/Lightbox";
-import { OPEN_PROJECT_EVENT, prefersReducedMotion } from "@/lib/events";
+import { OPEN_PROJECT_EVENT } from "@/lib/events";
+import { scrollToElement } from "@/lib/lenis";
 import { EASE_DRAWER, EASE_IN_OUT, EASE_OUT } from "@/lib/motion";
 import { LINKS } from "@/lib/site";
 import { PLATE_QUERY, useMediaQuery } from "@/lib/useMediaQuery";
@@ -103,8 +104,9 @@ export function WorkIndex() {
       timers.push(
         window.setTimeout(() => {
           const row = document.getElementById(`row-${id}`);
-          row?.focus({ preventScroll: true });
-          row?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center" });
+          if (!row) return;
+          row.focus({ preventScroll: true });
+          scrollToElement(row, "center");
         }, 60),
         window.setTimeout(() => setFlashId((cur) => (cur === id ? null : cur)), 1400),
       );
@@ -212,17 +214,18 @@ export function WorkIndex() {
           >
             {years.map(([year, items]) => (
               <li key={year}>
-                <div className="flex items-baseline gap-3 border-t border-ink pb-2 pt-5">
+                <div data-reveal="fade" className="flex items-baseline gap-3 border-t border-ink pb-2 pt-5">
                   <h3 className="type-group tabular">{year}</h3>
                   <p className="type-meta text-ink-60">
                     {items.length} {items.length === 1 ? "project" : "projects"}
                   </p>
                 </div>
                 <ol>
-                  {items.map((p) => (
+                  {items.map((p, i) => (
                     <IndexRow
                       key={p.id}
                       p={p}
+                      order={i}
                       open={openId === p.id}
                       active={plate.id === p.id}
                       flash={flashId === p.id}
@@ -256,6 +259,8 @@ export function WorkIndex() {
 
 interface IndexRowProps {
   p: Project;
+  /** Position within its year group: staggers the scroll reveal. */
+  order: number;
   open: boolean;
   active: boolean;
   flash: boolean;
@@ -265,10 +270,17 @@ interface IndexRowProps {
   onViewScreens: () => void;
 }
 
-function IndexRow({ p, open, active, flash, reduce, onToggle, onActivate, onViewScreens }: IndexRowProps) {
+function IndexRow({ p, order, open, active, flash, reduce, onToggle, onActivate, onViewScreens }: IndexRowProps) {
   const panelId = `panel-${p.id}`;
   return (
-    <li id={`project-${p.id}`} data-row="" data-active={active || undefined} className={flash ? "row-flash" : undefined}>
+    <li
+      id={`project-${p.id}`}
+      data-row=""
+      data-active={active || undefined}
+      data-reveal="fade"
+      style={{ "--rd": `${Math.min(order, 8) * 45}ms` } as React.CSSProperties}
+      className={flash ? "row-flash" : undefined}
+    >
       <div className="flex items-stretch">
         <button
           id={`row-${p.id}`}

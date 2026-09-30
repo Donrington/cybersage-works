@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { PERSON } from "@/lib/site";
 import { ResumeButton } from "./ResumeButton";
@@ -16,6 +17,9 @@ export function SiteHeader() {
   const pathname = usePathname();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  // Reading progress: a hairline that fills along the bottom edge of the nav.
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 220, damping: 40, restDelta: 0.001 });
 
   // Hairline appears once the page leaves the top. An observer on a sentinel,
   // not a scroll listener.
@@ -59,6 +63,11 @@ export function SiteHeader() {
             <ResumeButton size="sm" />
           </nav>
         </div>
+        <motion.span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-px origin-left bg-ink"
+          style={{ scaleX: progress }}
+        />
       </header>
     </>
   );

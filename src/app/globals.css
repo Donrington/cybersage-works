@@ -344,6 +344,525 @@ body {
   animation: row-flash 1200ms ease-out both;
 }
 
+/* ---------- texture ---------- */
+
+:root {
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Static paper grain over the whole page: the canvas never reads as flat white. */
+.page-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  background-image: var(--noise);
+  background-size: 220px;
+  opacity: 0.045;
+}
+
+/* ---------- kinetic type ---------- */
+
+/* Each word sits in its own mask, so lines wrap naturally. Padding keeps
+   descenders and italic overhangs inside the mask. */
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.02em 0.07em 0.17em;
+  margin: -0.02em -0.07em -0.17em;
+}
+
+/* First paint (hero headline): pure CSS, never waits for hydration. */
+.word {
+  display: inline-block;
+  transform-origin: 0 100%;
+  animation: word-rise 1s var(--ease-quint) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes word-rise {
+  from {
+    transform: translateY(112%) rotate(5deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Scroll reveal (section headings): RevealObserver sets data-shown. */
+.reveal-words .w {
+  display: inline-block;
+  transform-origin: 0 100%;
+  transition:
+    transform 1s var(--ease-quint),
+    opacity 0.9s var(--ease-quint);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.js .reveal-words:not([data-shown]) .w {
+  transform: translateY(112%) rotate(5deg);
+  opacity: 0;
+}
+
+.js [data-reveal="fade"] {
+  transition:
+    opacity 0.8s var(--ease-quint),
+    transform 0.8s var(--ease-quint);
+  transition-delay: var(--rd, 0ms);
+}
+
+.js [data-reveal="fade"]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.hero-in {
+  animation: fade-up 800ms var(--ease-quint) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Rotating last word: width reserved for the longest option. */
+.rotator {
+  display: inline-grid;
+  position: relative;
+}
+
+.rotator::before {
+  content: attr(data-longest);
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.rotator-word {
+  grid-area: 1 / 1;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* "Open to new roles" live dot. */
+.pulse-dot {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--color-ink);
+}
+
+.pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-ink);
+  animation: pulse-ring 2.2s var(--ease-quint) infinite;
+}
+
+@keyframes pulse-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  to {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+/* Stats roll up from 00 with a registered integer property (no JS). */
+@property --num {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.count {
+  --num: var(--to);
+  counter-reset: num var(--num);
+  animation: count-up 1.8s var(--ease-quint) both;
+  animation-delay: var(--d, 0ms);
+}
+
+.count::after {
+  content: counter(num, decimal-leading-zero);
+}
+
+@keyframes count-up {
+  from {
+    --num: 0;
+  }
+}
+
+/* ---------- line art ---------- */
+
+.curve-field path {
+  stroke-width: 1;
+}
+
+.curve-load path {
+  stroke-dasharray: 1;
+  animation: curve-draw 2.8s var(--ease-io) both;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 45ms);
+}
+
+@keyframes curve-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.curve-view path {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 2.6s var(--ease-io);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+
+.js .curve-view:not([data-shown]) path {
+  stroke-dashoffset: 1;
+}
+
+.curve-drift {
+  animation: drift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.curve-drift-slow {
+  animation: drift-slow 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-2.5%, 1.5%, 0) scale(1.04);
+  }
+}
+
+@keyframes drift-slow {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(2%, -2%, 0);
+  }
+}
+
+/* Soft pool of shade behind the portrait: gives the white page depth. */
+.hero-halo {
+  position: absolute;
+  right: -14%;
+  top: -10%;
+  width: min(72vw, 1040px);
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgb(10 10 10 / 0.075), rgb(10 10 10 / 0.028) 55%, transparent 100%);
+}
+
+.hero-mask {
+  -webkit-mask-image: radial-gradient(ellipse 88% 78% at 72% 42%, #000 30%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
+  mask-image: radial-gradient(ellipse 88% 78% at 72% 42%, #000 30%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
+}
+
+@media (max-width: 1023px) {
+  .hero-halo {
+    right: -35%;
+    top: -6%;
+    width: 130vw;
+  }
+  .hero-mask {
+    -webkit-mask-image: radial-gradient(ellipse 120% 70% at 60% 30%, #000 25%, rgb(0 0 0 / 0.45) 65%, transparent 100%);
+    mask-image: radial-gradient(ellipse 120% 70% at 60% 30%, #000 25%, rgb(0 0 0 / 0.45) 65%, transparent 100%);
+  }
+}
+
+.fade-mask-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+/* ---------- cinematic portrait ---------- */
+
+.cine-frame {
+  box-shadow: 0 50px 90px -50px rgb(10 10 10 / 0.45);
+}
+
+/* Push-in settle: starts close and dark, lands on the frame. */
+.cine-img {
+  animation: cine-push 2.6s var(--ease-quint) 0.1s both;
+}
+
+@keyframes cine-push {
+  from {
+    transform: scale(1.22);
+    filter: brightness(0.55) contrast(1.25);
+  }
+  to {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+/* Shutter: two ink bars open from the centre and stay as thin letterbox strips. */
+.cine-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: 50.5%;
+  background: var(--color-ink);
+  animation: cine-open 1.3s var(--ease-io) 0.15s both;
+}
+
+.cine-bar-top {
+  top: 0;
+  transform-origin: top;
+}
+
+.cine-bar-bottom {
+  bottom: 0;
+  transform-origin: bottom;
+}
+
+@keyframes cine-open {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.075);
+  }
+}
+
+.cine-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(120% 95% at 50% 38%, transparent 52%, rgb(10 10 10 / 0.4) 100%);
+}
+
+.cine-grain {
+  position: absolute;
+  inset: -50%;
+  z-index: 2;
+  pointer-events: none;
+  background-image: var(--noise);
+  background-size: 180px;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  animation: grain 0.9s steps(6) infinite;
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-4%, 3%);
+  }
+  40% {
+    transform: translate(3%, -4%);
+  }
+  60% {
+    transform: translate(-3%, -2%);
+  }
+  80% {
+    transform: translate(4%, 4%);
+  }
+}
+
+/* Crop marks at the frame corners, like a contact print. */
+.cine-mark {
+  position: absolute;
+  z-index: 4;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-color: var(--color-ink-45);
+}
+
+.cine-mark-tl {
+  left: -10px;
+  top: -10px;
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+
+.cine-mark-tr {
+  right: -10px;
+  top: -10px;
+  border-right: 1px solid;
+  border-top: 1px solid;
+}
+
+.cine-mark-bl {
+  left: -10px;
+  bottom: -10px;
+  border-left: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.cine-mark-br {
+  right: -10px;
+  bottom: -10px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+/* ---------- project marquee ---------- */
+
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  animation: marquee 90s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-name {
+  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-ink-20);
+}
+
+.marquee-sep {
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 2rem);
+  color: var(--color-ink-20);
+  margin-inline: clamp(1.25rem, 0.8rem + 1.5vw, 2.5rem);
+}
+
+/* ---------- page-end link: ink rises behind it on hover ---------- */
+
+.next-link {
+  position: relative;
+  isolation: isolate;
+  transition: color 0.45s var(--ease-quint);
+}
+
+.next-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-ink);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.6s var(--ease-quint);
+}
+
+.next-link:hover,
+.next-link:focus-visible {
+  color: var(--color-on-ink);
+}
+
+.next-link:hover::before,
+.next-link:focus-visible::before {
+  transform: scaleY(1);
+}
+
+.next-link .next-muted {
+  transition: color 0.45s var(--ease-quint);
+}
+
+.next-link:hover .next-muted,
+.next-link:focus-visible .next-muted {
+  color: var(--color-on-ink-60);
+}
+
+.next-link .next-slide {
+  transition: transform 0.6s var(--ease-quint);
+}
+
+.next-link:hover .next-slide-r,
+.next-link:focus-visible .next-slide-r {
+  transform: translateX(1.25rem);
+}
+
+.next-link:hover .next-slide-l,
+.next-link:focus-visible .next-slide-l {
+  transform: translateX(-1.25rem);
+}
+
+.next-link:focus-visible {
+  outline-offset: 0;
+}
+
+/* Email: underline draws in from the left on hover. */
+.email-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  padding-bottom: 0.08em;
+  transition: background-size 0.6s var(--ease-quint);
+}
+
+.email-link:hover,
+.email-link:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* ---------- footer dome ---------- */
+
+.footer-dome {
+  display: block;
+  width: 100%;
+  height: clamp(28px, 5vw, 84px);
+  margin-bottom: -1px;
+  color: var(--color-ink);
+  transform-origin: bottom;
+}
+
+/* Where supported, the dome swells as the footer arrives, then settles. */
+@supports (animation-timeline: view()) {
+  .footer-dome {
+    animation: dome-settle linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+
+  @keyframes dome-settle {
+    from {
+      transform: scaleY(2.2);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+}
+
+/* ---------- testimonial ink-in ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-word {
+    color: var(--color-ink) !important;
+  }
+}
+
 /* ---------- preferences ---------- */
 
 @media (prefers-reduced-motion: reduce) {
