@@ -1,20 +1,11 @@
 import type { NextConfig } from "next";
 
-// Served at https://cybersage.dev/works through a rewrite on the main site
-// (same pattern as cybersage.dev/pricing). Keep in sync with BASE_PATH in
-// src/lib/site.ts.
-const BASE_PATH = "/works";
-
+// Served at https://works.cybersage.dev (own Vercel project, own subdomain).
 const nextConfig: NextConfig = {
-  basePath: BASE_PATH,
   reactCompiler: true,
   poweredByHeader: false,
   images: {
     qualities: [75, 85],
-  },
-  async redirects() {
-    // Direct hits on the deployment root (cybersage-works.vercel.app/) land on the site.
-    return [{ source: "/", destination: BASE_PATH, basePath: false, permanent: false }];
   },
   async headers() {
     return [
