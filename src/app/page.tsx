@@ -1,65 +1,67 @@
-import Image from "next/image";
+import { NextPageLink } from "@/components/site/NextPageLink";
+import { FromTheStudio } from "@/components/studio/FromTheStudio";
+import { ProofOfWork } from "@/components/work/ProofOfWork";
+import { WorkHero } from "@/components/work/WorkHero";
+import { PROJECTS } from "@/data/projects";
+import { LINKS, MAIN_SITE_URL, PERSON, SITE_URL } from "@/lib/site";
 
-export default function Home() {
+// Links this page to the Person entity on cybersage.dev, and lists the work.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfilePage",
+      "@id": `${SITE_URL}/#page`,
+      url: `${SITE_URL}/`,
+      name: `Selected work of ${PERSON.name}`,
+      mainEntity: { "@id": `${MAIN_SITE_URL}/#person` },
+      hasPart: { "@id": `${SITE_URL}/#work` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${MAIN_SITE_URL}/#person`,
+      name: PERSON.name,
+      alternateName: PERSON.alias,
+      jobTitle: PERSON.role,
+      url: MAIN_SITE_URL,
+      image: `${SITE_URL}/me.webp`,
+      email: `mailto:${LINKS.email}`,
+      sameAs: [LINKS.github, LINKS.linkedin, LINKS.x],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/#work`,
+      name: "Proof of work",
+      numberOfItems: PROJECTS.length,
+      itemListElement: PROJECTS.map((p) => ({
+        "@type": "ListItem",
+        position: p.no,
+        item: {
+          "@type": "CreativeWork",
+          name: p.name,
+          description: p.tagline,
+          dateCreated: String(p.year),
+          genre: p.category,
+          keywords: p.stack.join(", "),
+          creator: { "@id": `${MAIN_SITE_URL}/#person` },
+          ...(p.link ? { url: p.link } : {}),
+        },
+      })),
+    },
+  ],
+};
+
+export default function WorkPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <WorkHero />
+      <ProofOfWork />
+      <FromTheStudio />
+      <NextPageLink href="/testimonials" label="Testimonials" />
+    </>
   );
 }

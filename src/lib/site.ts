@@ -12,6 +12,15 @@ export const PERSON = {
   availability: "Remote, worldwide",
 } as const;
 
+/** Social card for every page. Child pages that set `openGraph` replace the
+ *  parent's object entirely, so each page must pass this explicitly. */
+export const OG_IMAGE = {
+  url: "/og.png",
+  width: 1200,
+  height: 630,
+  alt: "Cybersage, Abakwe Carrington",
+} as const;
+
 export const LINKS = {
   email: "abakwecarrington@gmail.com",
   github: "https://github.com/Donrington",
