@@ -22,7 +22,7 @@ export const OG_IMAGE = {
 } as const;
 
 export const LINKS = {
-  email: "abakwecarrington@gmail.com",
+  email: "hello@cybersage.dev",
   github: "https://github.com/Donrington",
   linkedin: "https://www.linkedin.com/in/carrington-abakwe-b0b0a0217",
   x: "https://x.com/CarlSwitch_CHUG",
