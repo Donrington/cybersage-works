@@ -144,21 +144,8 @@ export const PROJECTS: Project[] = [
     linkKind: "live",
   },
   {
-    id: "judygolden",
-    no: 9,
-    name: "Judy Golden Tiling",
-    group: "service",
-    category: "Home Services",
-    tagline: "Marketing site for a Gulfport, Mississippi tiling company. Hard-edged brand system with a single gold accent, LocalBusiness structured data, and a CSRF-protected contact pipeline that degrades gracefully without keys.",
-    stack: ["Next.js", "Tailwind", "Framer Motion", "Resend"],
-    year: 2026,
-    cover: { src: "/shots/judygolden.webp", width: 1711, height: 916 },
-    link: "https://judygoldentiling.com",
-    linkKind: "live",
-  },
-  {
     id: "tuantling",
-    no: 10,
+    no: 9,
     name: "Tuan Tling Vinyl Flooring",
     group: "service",
     category: "Home Services",
@@ -171,7 +158,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "autoboy",
-    no: 11,
+    no: 10,
     name: "Autoboy Express",
     group: "platform",
     category: "B2B / B2C Marketplace",
@@ -184,7 +171,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "anoc",
-    no: 12,
+    no: 11,
     name: "Anoc.ng",
     group: "platform",
     category: "Audit / Finance",
@@ -197,7 +184,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "nextgen",
-    no: 13,
+    no: 12,
     name: "NextGen Robotics",
     group: "platform",
     category: "Automation Hub",
@@ -210,7 +197,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "axflo",
-    no: 14,
+    no: 13,
     name: "Axflo Oil & Gas",
     group: "platform",
     category: "Enterprise CMS",
@@ -223,7 +210,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "deets",
-    no: 15,
+    no: 14,
     name: "Deets",
     group: "platform",
     category: "Industrial System",
@@ -234,7 +221,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "chrisconteras",
-    no: 16,
+    no: 15,
     name: "Chris Conteras",
     group: "service",
     category: "Cleaning Agency",
@@ -247,7 +234,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "myrakeleher",
-    no: 17,
+    no: 16,
     name: "Myra Keleher",
     group: "service",
     category: "Cleaning Agency",
@@ -260,7 +247,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "samdus",
-    no: 18,
+    no: 17,
     name: "Samdus Oil & Gas",
     group: "company",
     category: "Corp Portfolio",
@@ -273,7 +260,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "amanigo",
-    no: 19,
+    no: 18,
     name: "Amanigo Travels",
     group: "platform",
     category: "Travel Mgmt App",
@@ -284,7 +271,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "rokeyla",
-    no: 20,
+    no: 19,
     name: "Rokeyla Fashion",
     group: "platform",
     category: "Ecommerce",
@@ -295,7 +282,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "krkmotors",
-    no: 21,
+    no: 20,
     name: "KRK Motors",
     group: "company",
     category: "Brand Site",
@@ -308,7 +295,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "twerk",
-    no: 22,
+    no: 21,
     name: "Twerk Queen Lagos",
     group: "company",
     category: "Event Portfolio",
@@ -321,7 +308,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "handyman",
-    no: 23,
+    no: 22,
     name: "All A Handyman",
     group: "service",
     category: "Lead Generation",
@@ -332,7 +319,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "techhub",
-    no: 24,
+    no: 23,
     name: "TechHub",
     group: "platform",
     category: "Dev Community",

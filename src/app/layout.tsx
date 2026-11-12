@@ -28,7 +28,7 @@ const instrument = Instrument_Serif({
 });
 
 const DESCRIPTION =
-  "Selected work of Abakwe Carrington, an infrastructure and systems architect: 24 shipped products across healthcare, energy, commerce and AI, with testimonials from clients and engineers.";
+  "Selected work of Abakwe Carrington, an infrastructure and systems architect: 23 shipped products across healthcare, energy, commerce and AI, with testimonials from clients and engineers.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

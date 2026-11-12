@@ -22,7 +22,6 @@ export const STUDIO_SHOTS: StudioShot[] = [
   { slug: "ver", image: { src: "/shots/ver.webp", width: 1606, height: 940 }, projectId: "ver", title: "VER", alt: "VER interface" },
   { slug: "theblacke", image: { src: "/shots/theblacke.webp", width: 1840, height: 939 }, projectId: "theblacke", title: "The Black-E", alt: "The Black-E interface" },
   { slug: "terryonfagan", image: { src: "/shots/terryonfagan.webp", width: 1830, height: 955 }, projectId: "terryonfagan", title: "Terryon Fagan", alt: "Terryon Fagan interface" },
-  { slug: "judygolden", image: { src: "/shots/judygolden.webp", width: 1711, height: 916 }, projectId: "judygolden", title: "Judy Golden Tiling", alt: "Judy Golden Tiling interface" },
   { slug: "tuantling", image: { src: "/shots/tuantling.webp", width: 1849, height: 999 }, projectId: "tuantling", title: "Tuan Tling Vinyl Flooring", alt: "Tuan Tling Vinyl Flooring interface" },
   { slug: "autoboy", image: { src: "/shots/autoboy.webp", width: 1847, height: 951 }, projectId: "autoboy", title: "Autoboy Express", alt: "Autoboy Express interface, screen 1 of 2" },
   { slug: "anoc", image: { src: "/shots/anoc.webp", width: 1853, height: 1076 }, projectId: "anoc", title: "Anoc.ng", alt: "Anoc.ng interface, screen 1 of 3" },
